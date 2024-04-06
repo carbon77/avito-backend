@@ -1,0 +1,28 @@
+server:
+  port: 8081
+  error:
+    include-stacktrace: on_param
+
+
+spring:
+  application:
+    name: bank-app-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/avito-backend
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database: postgresql
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+
+
+app:
+  security:
+    jwt:
+      expiration: 86400000 # 1 day
+      secretKey: 0917b13a9091915d54b6336f45909539cce452b3661b21f386418a257883b30a
