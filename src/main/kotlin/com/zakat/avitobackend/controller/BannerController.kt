@@ -11,9 +11,13 @@ class BannerController(
     private val bannerService: BannerService,
 ) {
 
-    @GetMapping("/user_banner")
-    fun findUserBanners(): String {
-        return "User banner"
+    @GetMapping("/user_banner", produces = ["application/json"])
+    fun findUserBanners(
+        @RequestParam("tag_id", required = true) tagId: Int,
+        @RequestParam("feature_id", required = true) featureId: Int,
+        @RequestParam("use_last_revision") useLastRevision: Boolean = false,
+    ): Any {
+        return bannerService.findUserBanners(tagId, featureId, useLastRevision)
     }
 
     @PostMapping("/banner")

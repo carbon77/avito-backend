@@ -11,10 +11,13 @@ import com.zakat.avitobackend.repository.FeatureRepository
 import com.zakat.avitobackend.repository.TagRepository
 import com.zakat.avitobackend.utils.BannerSpecifications.Companion.hasFeatureId
 import com.zakat.avitobackend.utils.BannerSpecifications.Companion.hasTagId
+import com.zakat.avitobackend.utils.BannerSpecifications.Companion.isActive
 import com.zakat.avitobackend.utils.OffsetBasedPageRequest
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.jpa.domain.Specification.allOf
+import org.springframework.data.jpa.domain.Specification.where
 import org.springframework.http.HttpStatus
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
@@ -27,6 +30,7 @@ class BannerService(
     private val bannerRepository: BannerRepository,
     private val tagRepository: TagRepository,
     private val featureRepository: FeatureRepository,
+    private val jdbcTemplate: JdbcTemplate,
 ) {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -90,5 +94,26 @@ class BannerService(
                 updatedAt = banner.updatedAt,
             )
         }
+    }
+
+    fun findUserBanners(tagId: Int, featureId: Int, useLastRevision: Boolean): Any {
+        if (useLastRevision) {
+            val query = "SELECT content FROM banners " +
+                    "WHERE feature_id=$featureId AND is_active AND " +
+                    "$tagId IN (SELECT tag_id FROM banners_tags WHERE banners_tags.banner_id=banners.banner_id);"
+
+            val resultSet = jdbcTemplate.query(query) { rs, rowNum -> rs.getString("content") }
+            if (resultSet.isEmpty()) {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, "Banner not found")
+            }
+
+            return resultSet[0]
+        }
+
+        return bannerRepository.findAll(
+            where(
+                isActive().and(hasFeatureId(featureId)).and(hasTagId(tagId))
+            )
+        ).firstOrNull()?.content ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Banner not found")
     }
 }

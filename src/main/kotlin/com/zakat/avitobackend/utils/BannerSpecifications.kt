@@ -15,5 +15,9 @@ class BannerSpecifications {
             val subRoot = root.join<Any, Any>("tags", JoinType.INNER)
             criteriaBuilder.equal(subRoot.get<Int>("id"), criteriaBuilder.literal(tagId))
         }
+
+        fun isActive(): Specification<Banner> = Specification { root, query, criteriaBuilder ->
+            criteriaBuilder.isTrue(root.get("isActive"))
+        }
     }
 }
