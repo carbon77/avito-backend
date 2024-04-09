@@ -6,7 +6,7 @@ import jakarta.persistence.*
 @Table(name = "tags")
 data class Tag(
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tag_id")
     val id: Int? = null
 )

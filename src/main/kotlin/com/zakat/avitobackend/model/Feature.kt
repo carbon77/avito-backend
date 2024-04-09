@@ -6,7 +6,7 @@ import jakarta.persistence.*
 @Table(name = "features")
 data class Feature(
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "feature_id")
     val id: Int? = null,
 )

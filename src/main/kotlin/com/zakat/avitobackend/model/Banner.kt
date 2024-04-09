@@ -1,7 +1,9 @@
 package com.zakat.avitobackend.model
 
+import com.fasterxml.jackson.databind.JsonNode
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.*
+import org.hibernate.Hibernate
 import org.hibernate.annotations.Type
 import java.sql.Timestamp
 
@@ -9,17 +11,17 @@ import java.sql.Timestamp
 @Table(name = "banners")
 data class Banner(
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "banner_id")
     val id: Int? = null,
 
     @Column(columnDefinition = "jsonb")
     @Type(JsonType::class)
-    val content: Any? = null,
+    val content: JsonNode? = null,
 
     val isActive: Boolean? = null,
     val createdAt: Timestamp? = null,
-    val updateAt: Timestamp? = null,
+    val updatedAt: Timestamp? = null,
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "feature_id", nullable = false)
@@ -32,4 +34,19 @@ data class Banner(
         inverseJoinColumns = [JoinColumn(name = "tag_id")]
     )
     var tags: MutableList<Tag> = mutableListOf()
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+        other as Banner
+
+        return id != null && id == other.id
+    }
+
+    override fun hashCode(): Int = javaClass.hashCode()
+
+    @Override
+    override fun toString(): String {
+        return this::class.simpleName + "(id = $id )"
+    }
+}
