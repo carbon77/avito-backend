@@ -10,15 +10,15 @@ import org.springframework.security.core.userdetails.UserDetails
 @Table(name = "users")
 data class User (
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false)
     var id: Long? = null,
     var email: String? = null,
     private var password: String? = null,
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-        name = "users_role",
+        name = "users_roles",
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
