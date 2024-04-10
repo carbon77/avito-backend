@@ -96,6 +96,7 @@ class BannerService(
         }
     }
 
+    @Transactional(readOnly = true)
     fun findUserBanners(tagId: Int, featureId: Int, useLastRevision: Boolean): Any {
         if (useLastRevision) {
             val query = "SELECT content FROM banners " +
@@ -115,5 +116,14 @@ class BannerService(
                 isActive().and(hasFeatureId(featureId)).and(hasTagId(tagId))
             )
         ).firstOrNull()?.content ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Banner not found")
+    }
+
+    @Transactional
+    fun deleteById(bannerId: Int) {
+        if (!bannerRepository.existsById(bannerId)) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Banner not found")
+        }
+
+        bannerRepository.deleteById(bannerId)
     }
 }

@@ -4,6 +4,7 @@ import com.zakat.avitobackend.dto.BannerDto
 import com.zakat.avitobackend.dto.CreateBannerRequest
 import com.zakat.avitobackend.dto.CreateBannerResponse
 import com.zakat.avitobackend.service.BannerService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -37,5 +38,11 @@ class BannerController(
         return bannerService.findAllByFilters(
             featureId, tagId, limit, offset
         )
+    }
+
+    @DeleteMapping("/banner/{id}")
+    fun deleteById(@PathVariable("id") featureId: Int): ResponseEntity<Any> {
+        bannerService.deleteById(featureId)
+        return ResponseEntity.noContent().build()
     }
 }
