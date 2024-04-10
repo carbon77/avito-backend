@@ -17,11 +17,11 @@ data class Banner(
 
     @Column(columnDefinition = "jsonb")
     @Type(JsonType::class)
-    val content: JsonNode? = null,
+    var content: JsonNode? = null,
 
-    val isActive: Boolean? = null,
+    var isActive: Boolean? = null,
     val createdAt: Timestamp? = null,
-    val updatedAt: Timestamp? = null,
+    var updatedAt: Timestamp? = null,
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "feature_id", nullable = false)

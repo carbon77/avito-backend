@@ -3,6 +3,7 @@ package com.zakat.avitobackend.service
 import com.zakat.avitobackend.dto.BannerDto
 import com.zakat.avitobackend.dto.CreateBannerRequest
 import com.zakat.avitobackend.dto.CreateBannerResponse
+import com.zakat.avitobackend.dto.PatchBannerRequest
 import com.zakat.avitobackend.model.Banner
 import com.zakat.avitobackend.model.Feature
 import com.zakat.avitobackend.model.Tag
@@ -125,5 +126,35 @@ class BannerService(
         }
 
         bannerRepository.deleteById(bannerId)
+    }
+
+    fun patchBanner(bannerId: Int, req: PatchBannerRequest) {
+        val banner = bannerRepository.findById(bannerId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Banner not found")
+        }
+
+        banner.content = req.content ?: banner.content
+        banner.isActive = req.isActive ?: banner.isActive
+
+        req.featureId?.let {
+            val newFeature = Feature(id=req.featureId)
+            featureRepository.save(newFeature)
+            banner.feature = newFeature
+        }
+
+        req.tagIds?.let {
+            val newTags: MutableList<Tag> = req.tagIds!!.map {
+                val tag = Tag(id = it)
+                tagRepository.save(tag)
+                tag
+            }.toMutableList()
+            banner.tags = newTags
+        }
+
+        if (req.isActive != null || req.content != null || req.featureId != null || req.tagIds != null) {
+            banner.updatedAt = Timestamp.from(Instant.now())
+        }
+
+        bannerRepository.save(banner)
     }
 }

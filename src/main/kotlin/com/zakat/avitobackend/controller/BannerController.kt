@@ -3,6 +3,7 @@ package com.zakat.avitobackend.controller
 import com.zakat.avitobackend.dto.BannerDto
 import com.zakat.avitobackend.dto.CreateBannerRequest
 import com.zakat.avitobackend.dto.CreateBannerResponse
+import com.zakat.avitobackend.dto.PatchBannerRequest
 import com.zakat.avitobackend.service.BannerService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -41,8 +42,13 @@ class BannerController(
     }
 
     @DeleteMapping("/banner/{id}")
-    fun deleteById(@PathVariable("id") featureId: Int): ResponseEntity<Any> {
-        bannerService.deleteById(featureId)
+    fun deleteById(@PathVariable("id") bannerId: Int): ResponseEntity<Any> {
+        bannerService.deleteById(bannerId)
         return ResponseEntity.noContent().build()
+    }
+
+    @PatchMapping("/banner/{id}")
+    fun patchBanner(@RequestBody req: PatchBannerRequest, @PathVariable("id") bannerId: Int) {
+        bannerService.patchBanner(bannerId, req)
     }
 }
