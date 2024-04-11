@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:16:///avito-backend
+    username: zakat
+    password: zakat
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+
+  jpa:
+    database: postgresql
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: true
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+  h2:
+    console:
+      enabled: true
+
+  profiles:
+    active: test
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+app:
+  security:
+    jwt:
+      expiration: 86400000 # 1 day
+      secretKey: 0917b13a9091915d54b6336f45909539cce452b3661b21f386418a257883b30a
