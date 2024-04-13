@@ -5,8 +5,11 @@ import com.zakat.avitobackend.dto.CreateBannerRequest
 import com.zakat.avitobackend.dto.CreateBannerResponse
 import com.zakat.avitobackend.dto.PatchBannerRequest
 import com.zakat.avitobackend.service.BannerService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
+import java.util.concurrent.CompletableFuture
 
 @RestController
 class BannerController(
@@ -44,6 +47,30 @@ class BannerController(
     @DeleteMapping("/banner/{id}")
     fun deleteById(@PathVariable("id") bannerId: Int): ResponseEntity<Any> {
         bannerService.deleteById(bannerId)
+        return ResponseEntity.noContent().build()
+    }
+
+    @DeleteMapping("/banner")
+    fun deleteByFeatureOrTag(
+        @RequestParam("feature_id") featureId: Int?,
+        @RequestParam("tag_id") tagId: Int?
+    ): ResponseEntity<Any> {
+        if (featureId == null && tagId == null) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "You must set feature_id or tag_id!")
+        }
+
+        if (featureId != null && tagId != null) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "You can set only one param!")
+        }
+
+        CompletableFuture.runAsync {
+            if (featureId != null) {
+                bannerService.deleteByFeature(featureId)
+            } else if (tagId != null) {
+                bannerService.deleteByTag(tagId)
+            }
+        }
+
         return ResponseEntity.noContent().build()
     }
 

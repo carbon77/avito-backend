@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
+import java.lang.Thread.sleep
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -137,7 +138,7 @@ class BannerService(
         banner.isActive = req.isActive ?: banner.isActive
 
         req.featureId?.let {
-            val newFeature = Feature(id=req.featureId)
+            val newFeature = Feature(id = req.featureId)
             featureRepository.save(newFeature)
             banner.feature = newFeature
         }
@@ -156,5 +157,23 @@ class BannerService(
         }
 
         bannerRepository.save(banner)
+    }
+
+    @Transactional
+    fun deleteByFeature(featureId: Int) {
+        sleep(2000)
+        val feature = featureRepository.findById(featureId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Feature not found")
+        }
+        bannerRepository.deleteByFeature(feature)
+    }
+
+    @Transactional
+    fun deleteByTag(tagId: Int) {
+        sleep(2000)
+        val tag = tagRepository.findById(tagId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Tag not found")
+        }
+        bannerRepository.deleteByTags(listOf(tag))
     }
 }
