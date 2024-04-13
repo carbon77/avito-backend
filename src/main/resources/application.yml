@@ -11,17 +11,16 @@ spring:
     name: bank-app-backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/avito-backend
-    username: postgres
-    password: admin
+    url: ${AVITO_BACKEND_DB_URL:jdbc:postgresql://localhost:5432/avito-backend}
+    username: ${AVITO_BACKEND_DB_USER:postgres}
+    password: ${AVITO_BACKEND_DB_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     database: postgresql
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
     defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create
   jackson:
     property-naming-strategy: SNAKE_CASE
   sql:

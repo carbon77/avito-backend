@@ -1,0 +1,21 @@
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      AVITO_BACKEND_DB_URL: jdbc:postgresql://postgres:5432/avito-backend
+      AVITO_BACKEND_DB_USER: postgres
+      AVITO_BACKEND_DB_PASSWORD: admin
+    depends_on:
+      - postgres
+
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=avito-backend'
+      - 'POSTGRES_PASSWORD=admin'
+      - 'POSTGRES_USER=postgres'
+    ports:
+      - '5432:5432'
