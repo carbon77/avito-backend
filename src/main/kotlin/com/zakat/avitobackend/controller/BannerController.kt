@@ -33,6 +33,7 @@ class BannerController(
     }
 
     @Operation(summary = "Создание нового баннера")
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/banner")
     fun create(
         @RequestBody request: CreateBannerRequest
