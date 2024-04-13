@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.OrRequestMatcher
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
@@ -16,17 +18,22 @@ class JwtAuthenticationFilter(
     private val jwtService: JwtService,
     private val userService: UserService,
 ) : OncePerRequestFilter() {
+    companion object {
+        val publicApis: List<String> = listOf("/auth/**", "/docs/**", "/swagger-ui/**", "/v3/api-docs/**")
+    }
+
+    override fun shouldNotFilter(request: HttpServletRequest): Boolean {
+        val requestMatcher = OrRequestMatcher(publicApis.map {
+            AntPathRequestMatcher(it, null)
+        })
+        return requestMatcher.matches(request)
+    }
 
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        if (request.servletPath.contains("/auth")) {
-            filterChain.doFilter(request, response)
-            return
-        }
-
         val authHeader: String? = request.getHeader("Authorization")
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User is not authorized")

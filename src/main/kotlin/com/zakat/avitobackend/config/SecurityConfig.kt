@@ -28,7 +28,9 @@ class SecurityConfig(
         http {
             csrf { disable() }
             authorizeRequests {
-                authorize("/auth/**", permitAll)
+                for (pattern in JwtAuthenticationFilter.publicApis) {
+                    authorize(pattern, permitAll)
+                }
                 authorize({ it.dispatcherType == DispatcherType.ERROR }, permitAll)
                 authorize("/banner/**", hasAuthority("ADMIN"))
                 authorize(anyRequest, authenticated)
