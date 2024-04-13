@@ -5,8 +5,10 @@ import com.zakat.avitobackend.dto.CreateBannerRequest
 import com.zakat.avitobackend.dto.CreateBannerResponse
 import com.zakat.avitobackend.dto.PatchBannerRequest
 import com.zakat.avitobackend.model.Banner
+import com.zakat.avitobackend.model.BannerHistory
 import com.zakat.avitobackend.model.Feature
 import com.zakat.avitobackend.model.Tag
+import com.zakat.avitobackend.repository.BannerHistoryRepository
 import com.zakat.avitobackend.repository.BannerRepository
 import com.zakat.avitobackend.repository.FeatureRepository
 import com.zakat.avitobackend.repository.TagRepository
@@ -33,6 +35,8 @@ class BannerService(
     private val tagRepository: TagRepository,
     private val featureRepository: FeatureRepository,
     private val jdbcTemplate: JdbcTemplate,
+    private val bannerHistoryRepository: BannerHistoryRepository,
+    private val bannerHistoryService: BannerHistoryService,
 ) {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -129,10 +133,13 @@ class BannerService(
         bannerRepository.deleteById(bannerId)
     }
 
+    @Transactional
     fun patchBanner(bannerId: Int, req: PatchBannerRequest) {
         val banner = bannerRepository.findById(bannerId).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "Banner not found")
         }
+
+        bannerHistoryService.create(banner)
 
         banner.content = req.content ?: banner.content
         banner.isActive = req.isActive ?: banner.isActive
@@ -175,5 +182,13 @@ class BannerService(
             ResponseStatusException(HttpStatus.NOT_FOUND, "Tag not found")
         }
         bannerRepository.deleteByTags(listOf(tag))
+    }
+
+    @Transactional(readOnly = true)
+    fun findHistoryById(bannerId: Int): List<BannerHistory> {
+        val banner = bannerRepository.findById(bannerId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Banner not found")
+        }
+        return bannerHistoryRepository.findByBanner(banner)
     }
 }

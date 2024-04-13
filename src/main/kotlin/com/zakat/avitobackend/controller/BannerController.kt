@@ -4,6 +4,7 @@ import com.zakat.avitobackend.dto.BannerDto
 import com.zakat.avitobackend.dto.CreateBannerRequest
 import com.zakat.avitobackend.dto.CreateBannerResponse
 import com.zakat.avitobackend.dto.PatchBannerRequest
+import com.zakat.avitobackend.model.BannerHistory
 import com.zakat.avitobackend.service.BannerService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -77,5 +78,10 @@ class BannerController(
     @PatchMapping("/banner/{id}")
     fun patchBanner(@RequestBody req: PatchBannerRequest, @PathVariable("id") bannerId: Int) {
         bannerService.patchBanner(bannerId, req)
+    }
+
+    @GetMapping("/banner/{id}/history")
+    fun findHistoryById(@PathVariable("id") bannerId: Int): List<BannerHistory> {
+        return bannerService.findHistoryById(bannerId)
     }
 }
