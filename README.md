@@ -37,3 +37,7 @@ docker-compose -f ./docker-compose.prod.yml up -d
 Приложение будет доступно по адресу: `localhost:8081`
 
 Документация Swagger будет доступа по адресу: `localhost:8081/docs`
+
+Для получения токена авторизации используется метод `/login`. При инициализации создается два пользователя:
+* email: `admin@example.com` password: `admin`
+* email: `user@example.com` password: `user`
